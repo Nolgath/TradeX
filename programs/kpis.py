@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 valid_brands = [
     "Audi","BMW","Mercedes-Benz","Volkswagen","VW","Porsche","Opel","Smart","Maybach",
@@ -16,10 +17,16 @@ valid_brands = [
     "Iveco","MAN","Scania","DAF","Renault Trucks","Volvo Trucks","Mercedes-Benz Vans","Ford Trucks"
 ]
 
-df = pd.read_excel(r'D:\TradeX\CZ-Learning\TradeX\stock_list.xlsx')
+base_path = os.path.dirname(os.path.abspath(__file__))
+
+stock_path = os.path.join(base_path, "..", "stock_list.xlsx")
+sales_path = os.path.join(base_path, "..", "sales_list.xlsx")
+
+df = pd.read_excel(stock_path)
 df = df[df['Hersteller'].isin(valid_brands)]
-df_sales = pd.read_excel(r'D:\TradeX\CZ-Learning\TradeX\sales_list.xlsx')
+df_sales = pd.read_excel(sales_path)
 df_sales = df_sales[df_sales['VK (Netto)'] > 0]
+
 
 #------------STOCK LIST-------------------------------
 def brands_available():
