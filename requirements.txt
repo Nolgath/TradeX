@@ -7,3 +7,4 @@ apscheduler
 openpyxl
 beautifulsoup4
 Flask-SQLAlchemy
+wtforms
