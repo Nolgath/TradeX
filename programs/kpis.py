@@ -81,5 +81,14 @@ def countries_sold_brand(brand):
     )
     return country_counts
 
+#Contries Sold by brand
+def countries_sold_model(model):
+    country_counts_model = (
+        df_sales.loc[df_sales['Modell'] == model, 'Land des Kunden']
+        .value_counts()
+        .to_dict()
+    )
+    return country_counts_model
 
-print(countries_sold_brand('Porsche'))
+
+print(countries_sold_model('Tucson'))

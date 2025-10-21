@@ -12,6 +12,16 @@
 <p>Model : {{session['model'] }}</p>
 <p>Stock : {{stock_count}}</p>
 <p>Sold Units (30 Days) : {{sold_units}}</p>
+
+<div id="country_sold_wrapper">
+<p>Country Sold</p>
+<p>
+{% for country, value in countries_sold.items() %}
+  <span id="country_sold">{{ country }}: {{ value }}</span>{% if not loop.last %} {% endif %}
+{% endfor %}
+</p>
+</div>
+
 <p>Average Selling Price (30 Days) : {{avg_sell_price}}</p>
 </div>
 
