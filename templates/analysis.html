@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Results</h1>
+
+<h2>{{brand}} {{model}}</h2>
+
+
+<div id="results-wrapper">
+<p>Make : {{session['brand'] }}</p>
+<p>Model : {{session['model'] }}</p>
+<p>Stock : {{stock_count}}</p>
+<p>Sold Units (30 Days) : {{sold_units}}</p>
+<p>Average Selling Price (30 Days) : {{avg_sell_price}}</p>
+</div>
+
+
+{% endblock content %}

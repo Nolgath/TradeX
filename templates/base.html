@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Equipment Scraper V1</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='navigation.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+</head>
+
+<body>
+
+    <div class="navbar">
+
+        <!-- Sidebar -->
+            <nav class="nav-buttons">
+                <h2>TradeX Internal</h2>
+                <ul>
+                    <li><button onclick="window.location.href='{{ url_for('index.home') }}'" >Home</button></li>
+                    <li><button onclick="window.location.href='{{ url_for('condition_report.condition_report') }}'" >Condition Report</button></li>
+                    <li><button onclick="window.location.href='{{ url_for('equipment_export.equipment_export_route') }}'" >Equipment Export</button></li>
+                </ul>
+            </nav>
+    </div>
+
+        <!-- Main content (block for Flask pages) -->
+        <main>
+            {% block content %}
+            {% endblock content %}
+        </main>
+
+
+
+</body>
+</html>

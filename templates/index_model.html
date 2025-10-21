@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<h2>Analysis on <span class="text-highlight">{{ brand }}.</span></h2>
+<div id="results-wrapper">
+<p>Stock : {{stock_p_brand}}</p>
+<p>Sold Units (30 Days) : {{units_sold_p_brand}}</p>
+<p>Average Selling Price (30 Days) : {{average_sell_price_p_brand}}</p>
+</div>
+
+<h2>Go into <span class="text-highlight_2">{{ brand }} model for more detail: </span></h2>
+<form class='form-wrapper' method="POST">
+  {{ form.hidden_tag() }}
+  {{ form.model.label(class='form-label') }} {{ form.model(class='form-control') }}
+  {{ form.submit(class='submit-button') }}
+</form>
+{% endblock %}

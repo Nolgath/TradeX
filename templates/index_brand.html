@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-wrapper">
+
+  <h1>Main Dashboard</h1>
+
+  <form class='form-wrapper' method="POST">
+    {{ form.hidden_tag() }}
+    {{ form.brand.label(class='form-label') }} {{ form.brand(class='form-control') }}
+    {{ form.submit(class='submit-button') }}
+  </form>
+</div>
+{% endblock content %}
