@@ -10,6 +10,7 @@ def analysis():
     brand = session.get('brand')
     model = session.get('model')
 
+
     stock_count = stock_per_model(model) #number of cars with this model
     sold_units = units_sold(model) #units sold per this model
     avg_sell_price = average_sell_price(model) #average selling price per this model

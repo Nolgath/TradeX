@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, session,url_for
 from wtforms import (SubmitField, SelectField)
 from flask_wtf import FlaskForm
 from programs.kpis import (models_available,stock_per_brand,
-                           units_sold_brand, average_sell_price_brand)
+                           units_sold_brand, average_sell_price_brand,countries_sold_brand)
 
 class ModelForm(FlaskForm):
     model = SelectField('Model', choices=[])
@@ -18,6 +18,8 @@ def model():
     form = ModelForm()
     form.model.choices = [(m, m) for m in models_available(brand)]
 
+
+    country_sold = countries_sold = countries_sold_brand(brand)
     stock_p_brand = stock_per_brand(brand)
     units_sold_p_brand = units_sold_brand(brand)
     average_sell_price_p_brand = average_sell_price_brand(brand)
@@ -27,4 +29,5 @@ def model():
         return redirect(url_for('analysis.analysis'))
     return render_template('index_model.html', form=form, brand=brand,
                            stock_p_brand=stock_p_brand,units_sold_p_brand=units_sold_p_brand,
-                           average_sell_price_p_brand=average_sell_price_p_brand)
+                           average_sell_price_p_brand=average_sell_price_p_brand,
+                           country_sold=country_sold)

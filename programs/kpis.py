@@ -16,9 +16,9 @@ valid_brands = [
     "Iveco","MAN","Scania","DAF","Renault Trucks","Volvo Trucks","Mercedes-Benz Vans","Ford Trucks"
 ]
 
-df = pd.read_excel('stock_list.xlsx')
+df = pd.read_excel(r'D:\TradeX\CZ-Learning\TradeX\stock_list.xlsx')
 df = df[df['Hersteller'].isin(valid_brands)]
-df_sales = pd.read_excel('sales_list.xlsx')
+df_sales = pd.read_excel(r'D:\TradeX\CZ-Learning\TradeX\sales_list.xlsx')
 df_sales = df_sales[df_sales['VK (Netto)'] > 0]
 
 #------------STOCK LIST-------------------------------
@@ -64,3 +64,15 @@ def average_sell_price_brand(brand):
     avg_per_brand = df_sales.groupby('Hersteller')['VK (Netto)'].mean().round(2)
     avg_dict = avg_per_brand.to_dict()
     return avg_dict.get(brand, 0)
+
+#Contries Sold by brand
+def countries_sold_brand(brand):
+    country_counts = (
+        df_sales.loc[df_sales['Hersteller'] == brand, 'Land des Kunden']
+        .value_counts()
+        .to_dict()
+    )
+    return country_counts
+
+
+print(countries_sold_brand('Porsche'))

@@ -61,3 +61,25 @@ h1 {
     padding: 20px;
 
 }
+
+/*COUNTRIES SOLD (/model)*/
+#country_sold {
+    border: 1px solid #000000;
+    background-color: #5ed5ff;
+    border-radius: 10px;
+    padding: 10px;
+
+}
+#country_sold_wrapper {
+    text-align: center;
+    border: 1px solid #000000;
+    border-radius: 10px;
+    background-color: #f5fcff;
+    padding: 5px 20px;
+}
+
+#country_sold_wrapper p:first-child {
+    padding-bottom: 10px;
+    font-size: 20px;
+    font-weight: bold;
+}
