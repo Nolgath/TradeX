@@ -4,6 +4,9 @@ from routes.p_equipment_export import equipment_export_bp
 from routes.p_index import index_bp
 from routes.p_model_section import model_bp
 from routes.p_analysis import analysis_bp
+from routes.p_auction_allane import auction_allane_bp
+from programs.download_excel import download_excel_stock, download_excel_sales
+from apscheduler.schedulers.background import BackgroundScheduler
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mysecretkey'
@@ -13,6 +16,7 @@ app.register_blueprint(equipment_export_bp)         #EQUIPMENT EXPORT PAGE
 app.register_blueprint(index_bp)                    #INDEX (FIRST PAGE)
 app.register_blueprint(model_bp)                    #MODEL (BRAND ANALYSIS LEVEL & SELECT MODEL TO GO FURTHER)
 app.register_blueprint(analysis_bp)                 #ANALYSIS PAGE
+app.register_blueprint(auction_allane_bp)                 #AUCTION PAGE
 
 if __name__ == "__main__":
     import os

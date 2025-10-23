@@ -18,14 +18,20 @@ valid_brands = [
 ]
 
 base_path = os.path.dirname(os.path.abspath(__file__))
-
 stock_path = os.path.join(base_path, "..", "stock_list.xlsx")
 sales_path = os.path.join(base_path, "..", "sales_list.xlsx")
-
 df = pd.read_excel(stock_path)
 df = df[df['Hersteller'].isin(valid_brands)]
 df_sales = pd.read_excel(sales_path)
 df_sales = df_sales[df_sales['VK (Netto)'] > 0]
+
+channel_value = None
+exclude_channels = []
+
+def set_channel(value):
+    global channel_value, exclude_channels
+    channel_value = value
+    exclude_channels = ['SAS Aramis', 'OPENLANE Deutschland GmbH'] if value == 'B2B' else []
 
 
 #------------STOCK LIST-------------------------------
@@ -44,51 +50,107 @@ def stock_per_model(model):
     brand_count = brand_count.to_dict()
     return brand_count.get(model, 0)
 
-#------------SALES LIST-------------------------------
-
-def units_sold(model):
-    units_sales = df_sales['Modell'].value_counts()
-    units_sales = units_sales.to_dict()
-    return units_sales.get(model, 0)
-
-def average_sell_price(model):
-    avg_per_brand = df_sales.groupby('Modell')['VK (Netto)'].mean().round(2)
-    avg_dict = avg_per_brand.to_dict()
-    return avg_dict.get(model, 0)
-
-#-------------ANALYSIS ON BRAND LEVEL---------------------------------
 def stock_per_brand(brand):
     brand_count = df['Hersteller'].value_counts()
     brand_count = brand_count.to_dict()
     return brand_count.get(brand, 0)
 
+
+#------------SALES LIST-------------------------------
+
+def units_sold(model):
+    if channel_value == 'B2B':
+        filtered = df_sales[
+            (df_sales['Modell'] == model) &
+            (~df_sales['Kunde'].isin(exclude_channels))
+        ]
+    else:
+        filtered = df_sales[
+            (df_sales['Modell'] == model) &
+            (df_sales['Kunde'] == channel_value)
+        ]
+    return len(filtered)
+
+def average_sell_price(model):
+    if channel_value == 'B2B':
+        filtered = df_sales[
+            (df_sales['Modell'] == model) &
+            (~df_sales['Kunde'].isin(exclude_channels))
+        ]
+    else:
+        filtered = df_sales[
+            (df_sales['Modell'] == model) &
+            (df_sales['Kunde'] == channel_value)
+        ]
+
+    if filtered.empty:
+        return 0
+    return round(filtered['VK (Netto)'].mean(), 2)
+
+
+#-------------ANALYSIS ON BRAND LEVEL---------------------------------
+
 def units_sold_brand(brand):
-    units_sales = df_sales['Hersteller'].value_counts()
-    units_sales = units_sales.to_dict()
-    return units_sales.get(brand, 0)
+    if channel_value == 'B2B':
+        filtered = df_sales[
+            (df_sales['Hersteller'] == brand) &
+            (~df_sales['Kunde'].isin(exclude_channels))
+        ]
+    else:
+        filtered = df_sales[
+            (df_sales['Hersteller'] == brand) &
+            (df_sales['Kunde'] == channel_value)
+        ]
+
+    return len(filtered)
+
 
 def average_sell_price_brand(brand):
-    avg_per_brand = df_sales.groupby('Hersteller')['VK (Netto)'].mean().round(2)
-    avg_dict = avg_per_brand.to_dict()
-    return avg_dict.get(brand, 0)
+    if channel_value == 'B2B':
+        filtered = df_sales[
+            (df_sales['Hersteller'] == brand) &
+            (~df_sales['Kunde'].isin(exclude_channels))
+        ]
+    else:
+        filtered = df_sales[
+            (df_sales['Hersteller'] == brand) &
+            (df_sales['Kunde'] == channel_value)
+        ]
+
+    if filtered.empty:
+        return 0
+    return round(filtered['VK (Netto)'].mean(), 2)
+
 
 #Contries Sold by brand
 def countries_sold_brand(brand):
-    country_counts = (
-        df_sales.loc[df_sales['Hersteller'] == brand, 'Land des Kunden']
-        .value_counts()
-        .to_dict()
-    )
+    if channel_value == 'B2B':
+        filtered = df_sales[
+            (df_sales['Hersteller'] == brand) &
+            (~df_sales['Kunde'].isin(exclude_channels))
+        ]
+    else:
+        filtered = df_sales[
+            (df_sales['Hersteller'] == brand) &
+            (df_sales['Kunde'] == channel_value)
+        ]
+
+    country_counts = filtered['Land des Kunden'].value_counts().to_dict()
     return country_counts
+
 
 #Contries Sold by brand
 def countries_sold_model(model):
-    country_counts_model = (
-        df_sales.loc[df_sales['Modell'] == model, 'Land des Kunden']
-        .value_counts()
-        .to_dict()
-    )
-    return country_counts_model
+    if channel_value == 'B2B':
+        filtered = df_sales[
+            (df_sales['Modell'] == model) &
+            (~df_sales['Kunde'].isin(exclude_channels))
+        ]
+    else:
+        filtered = df_sales[
+            (df_sales['Modell'] == model) &
+            (df_sales['Kunde'] == channel_value)
+        ]
 
-
-print(countries_sold_model('Tucson'))
+    country_counts = filtered['Land des Kunden'].value_counts().to_dict()
+    return country_counts

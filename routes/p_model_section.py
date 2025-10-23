@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, session,url_for
 from wtforms import (SubmitField, SelectField)
 from flask_wtf import FlaskForm
-from programs.kpis import (models_available,stock_per_brand,
+from programs.kpis import (models_available,stock_per_brand,set_channel,
                            units_sold_brand, average_sell_price_brand,countries_sold_brand)
 
 class ModelForm(FlaskForm):
@@ -15,11 +15,12 @@ model_bp = Blueprint('model',
 @model_bp.route("/model",methods=["GET","POST"])                         #MODEL
 def model():
     brand = session.get('brand')  # get selected brand
+    channel = session.get('channel')  # get selected brand
     form = ModelForm()
     form.model.choices = [(m, m) for m in models_available(brand)]
 
-
-    country_sold = countries_sold = countries_sold_brand(brand)
+    channel_selected = set_channel(channel)
+    country_sold = countries_sold_brand(brand)
     stock_p_brand = stock_per_brand(brand)
     units_sold_p_brand = units_sold_brand(brand)
     average_sell_price_p_brand = average_sell_price_brand(brand)

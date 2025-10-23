@@ -9,6 +9,7 @@ analysis_bp = Blueprint('analysis',
 def analysis():
     brand = session.get('brand')
     model = session.get('model')
+    channel = session.get('channel')
 
     countries_sold = countries_sold_model(model)
     stock_count = stock_per_model(model) #number of cars with this model

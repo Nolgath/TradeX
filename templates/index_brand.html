@@ -9,7 +9,8 @@
   <form class='form-wrapper' method="POST">
     {{ form.hidden_tag() }}
     {{ form.brand.label(class='form-label') }} {{ form.brand(class='form-control') }}
-    {{ form.submit(class='submit-button') }}
+    {{ form.channel.label(class='form-label') }} {{ form.channel(class='form-control') }}
+      {{ form.submit(class='submit-button') }}
   </form>
 </div>
 {% endblock content %}
