@@ -24,7 +24,6 @@ def download_excel_stock():
     with open("../stock_list.xlsx", "wb") as f:
         f.write(r.content)
 
-
 def download_excel_sales():
     if os.path.exists("../sales_list.xlsx"):
         os.remove("../sales_list.xlsx")

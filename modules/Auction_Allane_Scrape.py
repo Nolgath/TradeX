@@ -1,12 +1,13 @@
 import time
 import pandas as pd
 from playwright.sync_api import sync_playwright
+from io import BytesIO
 
 results = []
 
 def auction_scrape():
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         page.goto("https://auth.haendlerboerse.de/login?style=allane&lang=en&platformUrl=https://www.haendlerboerse.de")
         #Login
@@ -76,4 +77,9 @@ def auction_scrape():
         browser.close()
 
     df = pd.DataFrame(results)
-    df.to_excel("auction_allane.xlsx",index=False)
+
+    # Write to BytesIO (in-memory file)
+    output = BytesIO()
+    df.to_excel(output, index=False)
+    output.seek(0)
+    return output
