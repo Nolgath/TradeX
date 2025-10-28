@@ -1,0 +1,5 @@
+services:
+  - type: web
+    name: web-3-testing
+    env: docker
+    plan: free

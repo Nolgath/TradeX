@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>Analysis Page</h1>
+
+<form method="POST">
+  {{ form.hidden_tag() }}
+  {{ form.brand.label(class='form-label') }}
+  {{ form.brand(class='form-control') }}
+
+  {% if display_model %}
+    {{ form.model.label(class='form-label') }}
+    {{ form.model(class='form-control') }}
+  {% endif %}
+
+  {% if display_channel %}
+    {{ form.channel.label(class='form-label') }}
+    {{ form.channel(class='form-control') }}
+  {% endif %}
+
+  {{ form.submit(class='btn btn-primary') }}
+    <button type="reset" onclick="window.location.href='/'">Reset</button>
+</form>
+
+    {% if display_results %} <!-- Change this later -->
+    <h1>Analysis</h1>
+
+<div class="grid-container">
+
+    <div class="overview">
+    <h2>Overview</h2>
+        <p>Nº of cars in stock: {{ cars_in_stock_calc }} </p>
+        <p>Nº of cars sold: {{ cars_sold_calc }}</p>
+        <p>Sell-through rate (%): {{ sell_through_rate_calc }}</p>
+    </div>
+
+    <div class="pricing">
+    <h2>Pricing</h2>
+        <p>Average selling price: {{ average_selling_price_calc }} €</p>
+        <p>Average purchasing price: {{ average_purchasing_price_calc }} €</p>
+        <p>Average margin (€ and %): {{ average_margin_calc }} €</p>
+    </div>
+
+    <div class="profitability">
+    <h2>Profitability</h2>
+        <p>Total revenue: {{ total_revenue_calc }} €</p>
+        <p>Total profit: {{ total_profit_calc }} €</p>
+    </div>
+
+    <div class="stock_insights">
+    <h2>Stock Insights</h2>
+        <p>Average Stock Age (days): </p>
+        <p>Average Mileage: {{ average_mileage_calc }}</p>
+        <p>% with damages: </p>
+    </div>
+    {% endif %}
+</div>
+</div>
+{% endblock %}
