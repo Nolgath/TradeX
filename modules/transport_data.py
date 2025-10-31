@@ -13,4 +13,7 @@ sales_vins = {vin: str(link)[-5:] for vin, link in zip(sales['FIN'], sales['Link
 all_vins = {**stock_vins, **sales_vins}
 
 def car_ids(vin):
-    return all_vins.get(vin, None)
+    return all_vins.get(str(vin).strip().upper())
+
+
+print(car_ids('WF0JXXGAHJKL80237'))

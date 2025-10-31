@@ -49,7 +49,7 @@ def transport_price_input(df,user,password):
             print('#------------------------------------------------------')
         #------------------------------------------------------------------------------------------------------
             if pd.notna(location) and str(location).strip():
-                to_provider = PROVIDER_PAGE+car_ids(vin)
+                to_provider = PROVIDER_PAGE+car_id
                 time.sleep(2)
                 page.goto(to_provider)
                 location_field = page.locator("input[name='Standort']")
@@ -62,7 +62,7 @@ def transport_price_input(df,user,password):
         #-----------------------------------------------------------------------------------------------------
             #Output Date Input:
             if pd.notna(output_date) and str(output_date).strip():
-                to_int_remark = INT_REMARK_PAGE + car_ids(vin)
+                to_int_remark = INT_REMARK_PAGE + car_id
                 time.sleep(4)
                 page.goto(to_int_remark, wait_until="domcontentloaded", timeout=10000)
                 formatted_date = pd.to_datetime(output_date, dayfirst=True).strftime("%d.%m.%Y")
