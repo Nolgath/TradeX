@@ -34,6 +34,7 @@ def conditionreports(vins):
             with open(f"{vin}.pdf", "wb") as f:
                 f.write(r.content)
             pdf_files.append(f"{vin}.pdf")
+            print(f"Downloaded {vin}.pdf")
         except Exception as e:
             print(f"Error downloading VIN {vin}: {e}")
 

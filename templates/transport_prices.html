@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Transport Inputs</h2>
+
+{% if not session.get('user_done') %}
+<H3>Login to AMS</H3>
+<form method="POST" id="user">
+    <input type="text" name="user" placeholder="AMS Username">
+    <input type="password" name="password" placeholder="AMS Password">
+    <input type="submit" value="Login">
+</form>
+{% else %}
+
+<a href="{{ url_for('transport_price.download_template') }}">
+  <button type="button" class="btn_btn-primary_download">Download Excel Template</button>
+</a>
+
+<br>
+
+<form method="POST" enctype="multipart/form-data">
+    <input type="file" name="file" class="btn btn-primary">
+    <input type="submit" value="Insert in System" class="btn btn-primary">
+</form>
+{% endif %}
+
+
+
+{% if logs %}
+<div class="logs">
+<h2>Logs</h2>
+{% for log in logs %}
+    <p>{{ log }}</p>
+{% endfor %}
+{% endif %}
+</div>
+
+
+{% endblock content %}

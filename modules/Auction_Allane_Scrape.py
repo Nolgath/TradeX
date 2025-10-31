@@ -3,9 +3,8 @@ import pandas as pd
 from playwright.sync_api import sync_playwright
 from io import BytesIO
 
-results = []
-
 def auction_scrape():
+    results = []
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
@@ -15,14 +14,16 @@ def auction_scrape():
         page.fill("input[name=password]", "AMSPurchase2025!")
         page.click("button[type=submit]")
     #---------------------------------------START
-        page.goto('https://www.haendlerboerse.de/buy/online/car/list')
+        print('Opening page of cars')
+        page.goto('https://www.haendlerboerse.de/buy/online/car/list',wait_until="networkidle")
 
         time.sleep(3)
         n_of_cars = page.locator('.AllVehiclesListCounter').inner_text()
         page.locator("div[id^='article_id_']").first.click()
+        print('Clicked first car to start scraping')
 
         for i in range(int(n_of_cars)):
-            page.wait_for_selector("#identification_nr .col-xs-7.col-sm-6", timeout=10000)
+            page.wait_for_selector("#identification_nr .col-xs-7.col-sm-6", timeout=30000)
 
             def safe_text(page, selector):
                 if page.locator(selector).count() == 0:
@@ -73,6 +74,8 @@ def auction_scrape():
 
             page.get_by_text("nächstes Angebot").click()
             page.wait_for_load_state("domcontentloaded")
+
+            print(f"Scraped {i+1} cars, Current Vin : {vin} | {brand} | {model}")
 
         browser.close()
 

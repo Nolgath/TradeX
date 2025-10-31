@@ -91,7 +91,7 @@ form {
   background: #415a77;
 }
 
-button[type="reset"] {
+button[type="reset"], .btn_btn-primary_download {
   background: #e0e1dd;
   color: #1b263b;
   border: none;

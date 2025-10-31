@@ -1,6 +1,11 @@
-import os
 
-x = os.listdir(r'D:\TradeX\3 - Ad Hoc\Kim reports')
 
-for i in x:
-    print(i)
+
+
+logs = []
+
+car = f'iosnjiosdf'
+
+logs.append(car)
+
+print(logs)
