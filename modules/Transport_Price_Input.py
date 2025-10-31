@@ -3,10 +3,6 @@ from playwright.sync_api import sync_playwright
 from modules.transport_data import car_ids
 import pandas as pd
 
-# df = pd.read_excel(r'D:\TradeX\TradeX System Project\TradeX_Analysis\temp\template_prices_transport.xlsx')
-#
-# excel = df.to_dict(orient='records')
-
 def transport_price_input(df,user,password):
     PROVIDER_PAGE = 'https://ams-de.mega-moves.com/portal/vehicles/pages/vehicle-details-4.php?wgID='
     INT_REMARK_PAGE = 'https://ams-de.mega-moves.com/portal/vehicles/pages/vehicle-details-5.php?wgID='
@@ -199,8 +195,8 @@ def transport_price_input(df,user,password):
                 price_input = 'No Price Added ❌'
                 continue
 
-        car_log = f'Car: {vin} | {location_log} | {outputdate_log} | {price_input} | {MAIN_PAGE+car_id} '
-        logs.append(car_log)
+            car_log = f'Car: {vin} | {location_log} | {outputdate_log} | {price_input} | {MAIN_PAGE+car_id} '
+            logs.append(car_log)
         print('Done!')
         browser.close()
-        return logs
+    return logs
