@@ -61,8 +61,8 @@ def partslink(df):
                 equipment_descs.append(equipment_desc)
             clean_codes = [x.replace("\n", " ").strip() for x in equipment_codes]
             clean_desc = [x.replace("\n", " ").strip() for x in equipment_descs]
-            vehicle["Equipment Codes"] = ",".join(clean_codes)
-            vehicle["Equipment Descriptions"] = ",".join(clean_desc)
+            vehicle["Equipment Codes"] = "|".join(clean_codes)
+            vehicle["Equipment Descriptions"] = "|".join(clean_desc)
             time.sleep(3)
         browser.close()
 
