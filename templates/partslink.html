@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+    <div>Brands available: VW, Audi.</div>
+    <p>Excel file must have columns : brand and VIN exactly.</p>
+
+    <form method="POST" enctype="multipart/form-data">
+    <input type="file" name="file" class="btn btn-primary">
+    <input type="submit" value="Extract Data" class="btn btn-primary">
+    </form>
+
+    </div>
+{% endblock content %}

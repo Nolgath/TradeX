@@ -3,7 +3,7 @@ import os
 from datetime import datetime, timedelta
 
 today = datetime.now()
-last_month = today - timedelta(days=30)
+last_month = today - timedelta(days=180)
 today_str = today.strftime("%d.%m.%Y")
 last_month_str = last_month.strftime("%d.%m.%Y")
 

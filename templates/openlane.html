@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+    <div class="container_openlane">
+    <select class="selector" name="cars" id="cars">
+        <option value="not_ready">Not Ready for Sale</option>
+        <option value="ready">Ready for Sale</option>
+        <option value="auction">On Auction</option>
+    </select>
+
+    <button class="btn start">Get Information</button>
+
+    <img src=".\static\Loading_icon.gif" alt="loading icon">
+    </div>
+
+
+{% endblock content %}

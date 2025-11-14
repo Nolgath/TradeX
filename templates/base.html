@@ -5,6 +5,7 @@
     <title>Equipment Scraper V1</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='nav.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='main_page.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
@@ -20,6 +21,8 @@
             <li><button onclick="window.location.href='{{ url_for('equipment_export.equipment_export_route') }}'" >Equipment Export</button></li>
             <li><button onclick="window.location.href='{{ url_for('auction_allane.auction_allane') }}'" >Allane Auction</button></li>
             <li><button onclick="window.location.href='{{ url_for('transport_price.transport_price') }}'" >Transport Prices</button></li>
+            <li><button onclick="window.location.href='{{ url_for('openlane.openlane_bp_page') }}'" >Openlane</button></li>
+            <li><button onclick="window.location.href='{{ url_for('partslink.partslink_bp_page') }}'" >Partslink</button></li>
         </ul>
     </nav>
 </div>

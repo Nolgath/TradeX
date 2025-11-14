@@ -2,47 +2,59 @@ from zipfile import ZipFile
 import os
 import pandas as pd
 import requests
+import time
 
 def conditionreports(vins):
-    # --- LOGIN FIRST ---
     session = requests.Session()
     payload = {
         'username': 'c.zorila',
         'password': 'MemoCristian2025'
     }
-    session.post('https://ams-de.mega-moves.com/', data=payload)
+
+    try:
+        session.post('https://ams-de.mega-moves.com/', data=payload, timeout=15)
+    except Exception as e:
+        print(f"Login error: {e}")
+        return
 
     df = pd.read_excel('stock_list.xlsx')
 
-    df['FIN'] = df['FIN'].str.strip()
-    df['Link Gutachten'] = df['Link Gutachten'].str.strip()
-
-    vin_list = df['FIN'].to_list()
-    condition_url = df['Link Gutachten'].to_list()
-
-    vin_url_pairs = list(zip(vin_list, condition_url))
+    df['FIN'] = df['FIN'].astype(str).str.strip()
+    df['Link Gutachten'] = df['Link Gutachten'].astype(str).str.strip()
 
     pdf_files = []
 
-    for vin, url in vin_url_pairs:
-        # Skip if URL is missing, NaN, None, or empty
-        if vin not in vins or pd.isna(url) or not isinstance(url, str) or not url.strip():
-            continue
-        try:
-            r = session.get(url)
-            r.raise_for_status()  # Raise error for bad status codes (optional)
-            with open(f"{vin}.pdf", "wb") as f:
-                f.write(r.content)
-            pdf_files.append(f"{vin}.pdf")
-            print(f"Downloaded {vin}.pdf")
-        except Exception as e:
-            print(f"Error downloading VIN {vin}: {e}")
+    for _, row in df.iterrows():
+        vin = row['FIN']
+        url = row['Link Gutachten']
 
-    if pdf_files:
-        zip_name = 'ConditionReports.zip'
+        if vin not in vins or not url or url == 'nan':
+            continue
+
+        try:
+            r = session.get(url, timeout=20)
+            r.raise_for_status()
+            pdf_path = f"{vin}.pdf"
+            with open(pdf_path, "wb") as f:
+                f.write(r.content)
+            pdf_files.append(pdf_path)
+            print(f"Downloaded {pdf_path}")
+            time.sleep(0.5)  # avoid overloading the server
+        except Exception as e:
+            print(f"Error downloading {vin}: {e}")
+
+    if not pdf_files:
+        print("No valid files downloaded.")
+        return
+
+    zip_name = 'ConditionReports.zip'
+    try:
         with ZipFile(zip_name, 'w') as zipf:
             for pdf in pdf_files:
                 zipf.write(pdf)
-
+    finally:
         for pdf in pdf_files:
-            os.remove(pdf)
+            if os.path.exists(pdf):
+                os.remove(pdf)
+
+    print(f"Created {zip_name} with {len(pdf_files)} reports.")

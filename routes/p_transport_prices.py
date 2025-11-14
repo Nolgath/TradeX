@@ -34,7 +34,6 @@ def transport_price():
 
     return render_template('transport_prices.html', df=df, logs=logs)
 
-
 @transport_price_bp.route('/download_template')
 def download_template():
     base_dir = os.path.dirname(os.path.abspath(__file__))
