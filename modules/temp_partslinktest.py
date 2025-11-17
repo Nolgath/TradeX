@@ -53,16 +53,37 @@ with sync_playwright() as p:
         count = rows_vd.count()
         equipment_codes = []
         equipment_descs = []
+
+        dont_include = ['without','possible','on demand']
+
         for i in range(count):
-            attribute = rows_vd.nth(i).locator("div.p5_table_cell_comp.p5t15_col1").inner_text()
-            equipment_code = rows_vd.nth(i).locator("div.p5_table_cell_comp.p5t15_col2").inner_text()
-            equipment_desc = rows_vd.nth(i).locator("div.p5_table_cell_comp.p5t15_col3").inner_text()
+            attr_text = rows_vd.nth(i).locator("div.p5_table_cell_comp.p5t15_col1").inner_text()
+            code_text = rows_vd.nth(i).locator("div.p5_table_cell_comp.p5t15_col2").inner_text()
+            desc_text = rows_vd.nth(i).locator("div.p5_table_cell_comp.p5t15_col3").inner_text()
+
+            # skip if any forbidden word appears
+            if any(word in attr_text.lower() for word in dont_include):
+                continue
+
+            if any(word in code_text.lower() for word in dont_include):
+                continue
+
+            if any(word in desc_text.lower() for word in dont_include):
+                continue
+
+            # valid → append values
+            attribute = attr_text
+            equipment_code = code_text
+            equipment_desc = desc_text
+
             equipment_codes.append(equipment_code)
             equipment_descs.append(equipment_desc)
+
+
         clean_codes = [x.replace("\n", " ").strip() for x in equipment_codes]
         clean_desc = [x.replace("\n", " ").strip() for x in equipment_descs]
-        vehicle["Equipment Codes"] = ",".join(clean_codes)
-        vehicle["Equipment Descriptions"] = ",".join(clean_desc)
+        vehicle["Equipment Codes"] = "|".join(clean_codes)
+        vehicle["Equipment Descriptions"] = "|".join(clean_desc)
         time.sleep(3)
     browser.close()
 

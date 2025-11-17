@@ -3,20 +3,27 @@ import time
 import pandas as pd
 from io import BytesIO
 
-def partslink(df):
+def partslink(df,country):
     audi = 'https://www.partslink24.com/p5/latest/p5.html#%2Fp5vwag~audi_parts~en~'
     vw = 'https://www.partslink24.com/p5/latest/p5.html#%2Fp5vwag~vw_parts~en~'
+    skoda = 'https://www.partslink24.com/p5/latest/p5.html#%2Fp5vwag~skoda_parts~en~'
     vins = df['VIN'].tolist()
     brands = df['brand'].str.lower().tolist()
-    brands_url = {'audi': audi, 'vw': vw, }
+    brands_url = {'audi': audi, 'vw': vw, 'skoda': skoda }
     print(vins)
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
-        username = "Admin-PT"
-        password = "trAdEx2025*!"
         id = "de-800610"
+
+        if country == 'Portugal':
+            username = "Admin-PT"
+            password = "trAdEx2025*!"
+        else:
+            username = "admin"
+            password = "AmS2024!"
+
         page.goto("https://www.partslink24.com/")
         page.fill("#login-name", username)
         page.fill("#inputPassword", password)
@@ -34,7 +41,7 @@ def partslink(df):
 
         for vin,brand in zip(vins,brands):
             print(f'Extracting : {vin}')
-            if brand in brands_url:
+            if brand.lower() in brands_url:
                 url = brands_url[brand] + vin
             time.sleep(1)
             page.goto(url)
@@ -53,16 +60,34 @@ def partslink(df):
             count = rows_vd.count()
             equipment_codes = []
             equipment_descs = []
+            dont_include = ['without', 'possible', 'on demand']
+
             for i in range(count):
-                attribute = rows_vd.nth(i).locator("div.p5_table_cell_comp.p5t15_col1").inner_text()
-                equipment_code = rows_vd.nth(i).locator("div.p5_table_cell_comp.p5t15_col2").inner_text()
-                equipment_desc = rows_vd.nth(i).locator("div.p5_table_cell_comp.p5t15_col3").inner_text()
+                attr_text = rows_vd.nth(i).locator("div.p5_table_cell_comp.p5t15_col1").inner_text()
+                code_text = rows_vd.nth(i).locator("div.p5_table_cell_comp.p5t15_col2").inner_text()
+                desc_text = rows_vd.nth(i).locator("div.p5_table_cell_comp.p5t15_col3").inner_text()
+
+                # skip if any forbidden word appears
+                if any(word in attr_text.lower() for word in dont_include):
+                    continue
+
+                if any(word in code_text.lower() for word in dont_include):
+                    continue
+
+                if any(word in desc_text.lower() for word in dont_include):
+                    continue
+
+                # valid → append values
+                attribute = attr_text
+                equipment_code = code_text
+                equipment_desc = desc_text
+
                 equipment_codes.append(equipment_code)
                 equipment_descs.append(equipment_desc)
             clean_codes = [x.replace("\n", " ").strip() for x in equipment_codes]
             clean_desc = [x.replace("\n", " ").strip() for x in equipment_descs]
-            vehicle["Equipment Codes"] = ",".join(clean_codes)
-            vehicle["Equipment Descriptions"] = ",".join(clean_desc)
+            vehicle["Equipment Codes"] = "|".join(clean_codes)
+            vehicle["Equipment Descriptions"] = "|".join(clean_desc)
             time.sleep(3)
         browser.close()
 
@@ -73,3 +98,5 @@ def partslink(df):
     output.seek(0)
     return output
 
+# Dont include "Withouth" no  include "feature on demand" or "possible" (things that are not included)
+# Verify the order of codes + equipment descriptions
