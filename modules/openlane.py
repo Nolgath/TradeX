@@ -1,16 +1,93 @@
 import time
-
 from playwright.sync_api import sync_playwright
 import pandas as pd
+from io import BytesIO
 
+def openlane_scrape():
+    status = ['notReadyForSale', 'readyForSale', 'auctionOngoing']
+    # status = ['readyForSale']
+    USERNAME = 'mh@tradex-auto.com'
+    PASSWORD = 'TRADExAMS2n2025+!'
 
-USERNAME = 'mh@tradex-auto.com'
-PASSWORD = 'TRADExAMS2n2025+!'
+    with sync_playwright() as p:
+        browser = p.chromium.launch(
+            headless=False,
+            args=[
+                "--disable-blink-features=AutomationControlled",
+                "--no-sandbox",
+                "--disable-dev-shm-usage"
+            ]
+        )
+        context = browser.new_context(
+            viewport={"width": 1280, "height": 900},
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0 Safari/537.36"
+        )
+        page = context.new_page()
+        page.goto('https://okta.iam.karglobal.com/app/okta_org2org/exk35eesxnP4zEMGM0i7/sso/saml')
+        page.fill('#idp-discovery-username', USERNAME)
+        page.keyboard.press('Enter')
+        page.fill('#okta-signin-password', PASSWORD)
+        page.keyboard.press('Enter')
+        time.sleep(5)
+        page.wait_for_load_state("networkidle")
+        page.goto('https://sell.openlane.eu/vehicles?status=readyForSale')
+        page.locator('#login-button').click()
+        page.wait_for_load_state("networkidle")
+        time.sleep(5)
+        car_id = []
+        results = []
 
-with sync_playwright() as p:
-    browser = p.chromium.launch(headless=False)
-    page = browser.new_page()
-    page.goto('https://sell.openlane.eu/vehicles?status=all')
+        for n in status:
+            page.goto(f'https://sell.openlane.eu/vehicles?status={n}')
+            page.wait_for_load_state("networkidle")
 
-    time.sleep(10)
-    browser.close()
+            #Get count of vehicles
+            while True:
+                rows_vd = page.locator("a._flexContainer_5p7wh_1")
+                count = rows_vd.count()
+                print(f"Found {count} vehicles")
+                for i in range(count):
+                    href = rows_vd.nth(i).get_attribute("href")
+                    car_id.append(href)
+                next_btn = page.locator('button:has(svg[data-icon="chevron-right"])')
+                # If the button is not found → stop
+                if next_btn.count() == 0:
+                    break
+                # If the button exists but is disabled → stop
+                if next_btn.is_disabled():
+                    break
+                next_btn.click()
+                page.wait_for_timeout(2000)
+
+            #Extraction
+            for link in car_id:
+                vehicle = {}
+                car = f'https://sell.openlane.eu{link}/stockManagement'
+                page.goto(car)
+                time.sleep(2)
+                page.wait_for_load_state("networkidle")
+                loc = page.locator('[data-testid="adesaEstimatedSalesPrice"]')
+                price = loc.get_attribute("value") if loc.count() else 0
+                loc = page.get_by_text("VIN:")
+                if loc.count():
+                    txt = loc.first.inner_text()
+                    vin = txt.split("VIN:")[1].strip()
+                else:
+                    vin = ""
+                results.append({"VIN": vin, "Price": price})
+                print(f'{vin} | {price} | {n}')
+                vehicle['VIN'] = vin
+                vehicle['Price'] = price
+                vehicle['Status'] = n
+                results.append(vehicle)
+
+            time.sleep(3)
+
+        result_df = pd.DataFrame(results)
+
+        # Write to BytesIO (in-memory file)
+        output = BytesIO()
+        result_df.to_excel(output, index=False)
+        output.seek(0)
+        browser.close()
+        return output
