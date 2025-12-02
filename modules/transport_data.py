@@ -13,7 +13,8 @@ sales_vins = {vin: str(link)[-5:] for vin, link in zip(sales['FIN'], sales['Link
 all_vins = {**stock_vins, **sales_vins}
 
 def car_ids(vin):
-    return all_vins.get(str(vin).strip().upper())
-
-
-print(car_ids('WF0JXXGAHJKL80237'))
+    vin = str(vin).strip().upper()
+    # Fix missing zeros
+    if len(vin) < 17:
+        vin = vin.zfill(17)
+    return all_vins.get(vin)
