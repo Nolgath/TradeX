@@ -20,9 +20,15 @@ def openlane_scrape():
         )
         context = browser.new_context(
             viewport={"width": 1280, "height": 900},
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0 Safari/537.36"
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0 Safari/537.36",
+            java_script_enabled=True
         )
         page = context.new_page()
+        page.goto('about:blank')
+        page.add_init_script("""
+        Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+        """)
+        time.sleep(3)
         page.goto('https://okta.iam.karglobal.com/app/okta_org2org/exk35eesxnP4zEMGM0i7/sso/saml')
         page.fill('#idp-discovery-username', USERNAME)
         page.keyboard.press('Enter')
@@ -31,7 +37,9 @@ def openlane_scrape():
         time.sleep(5)
         page.wait_for_load_state("networkidle")
         page.goto('https://sell.openlane.eu/vehicles?status=readyForSale')
-        page.locator('#login-button').click()
+        print('login button click phase')
+        page.wait_for_selector('#login-button', state='visible', timeout=15000)
+        page.click('#login-button')
         page.wait_for_load_state("networkidle")
         time.sleep(5)
         car_id = []
@@ -40,7 +48,6 @@ def openlane_scrape():
         for n in status:
             page.goto(f'https://sell.openlane.eu/vehicles?status={n}')
             page.wait_for_load_state("networkidle")
-
             #Get count of vehicles
             while True:
                 rows_vd = page.locator("a._flexContainer_5p7wh_1")
@@ -58,7 +65,6 @@ def openlane_scrape():
                     break
                 next_btn.click()
                 page.wait_for_timeout(2000)
-
             #Extraction
             for link in car_id:
                 vehicle = {}
