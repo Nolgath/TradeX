@@ -44,8 +44,8 @@ def openlane_scrape():
         page.goto('https://sell.openlane.eu/vehicles?status=readyForSale')
         print("Current URL:", page.url)
         print('login button click phase')
-        page.wait_for_selector('#login-button', state='visible', timeout=15000)
-        page.click('#login-button')
+        page.wait_for_selector('#login-button', state='visible', timeout=15000).click()
+        # page.click('#login-button')
         page.wait_for_load_state("networkidle")
         time.sleep(5)
         car_id = []
