@@ -15,11 +15,15 @@ def openlane_scrape():
             args=[
                 "--disable-blink-features=AutomationControlled",
                 "--no-sandbox",
-                "--disable-dev-shm-usage"
+                "--disable-dev-shm-usage",
+                "--disable-gpu",
+                "--disable-setuid-sandbox",
+                "--single-process"
             ]
         )
+
         context = browser.new_context(
-            viewport={"width": 1280, "height": 900},
+            viewport={"width": 1600, "height": 1000},
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0 Safari/537.36",
             java_script_enabled=True
         )
@@ -30,6 +34,7 @@ def openlane_scrape():
         """)
         time.sleep(3)
         page.goto('https://okta.iam.karglobal.com/app/okta_org2org/exk35eesxnP4zEMGM0i7/sso/saml')
+        print("Current URL:", page.url)
         page.fill('#idp-discovery-username', USERNAME)
         page.keyboard.press('Enter')
         page.fill('#okta-signin-password', PASSWORD)
@@ -37,6 +42,7 @@ def openlane_scrape():
         time.sleep(5)
         page.wait_for_load_state("networkidle")
         page.goto('https://sell.openlane.eu/vehicles?status=readyForSale')
+        print("Current URL:", page.url)
         print('login button click phase')
         page.wait_for_selector('#login-button', state='visible', timeout=15000)
         page.click('#login-button')
