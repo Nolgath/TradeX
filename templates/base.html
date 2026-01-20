@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Equipment Scraper V1</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='nav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='main_page.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="navbar">
+
+<!-- Sidebar -->
+    <nav class="nav-buttons">
+        <h2 id="title_nav">TradeX Internal</h2>
+        <ul>
+            <li><button onclick="window.location.href='{{ url_for('main_page.main_page') }}'" >Home</button></li>
+            <li><button onclick="window.location.href='{{ url_for('condition_report.condition_report') }}'" >Condition Report</button></li>
+            <li><button onclick="window.location.href='{{ url_for('equipment_export.equipment_export_route') }}'" >Equipment Export</button></li>
+            <li><button onclick="window.location.href='{{ url_for('auction_allane.auction_allane') }}'" >Allane Auction</button></li>
+            <li><button onclick="window.location.href='{{ url_for('transport_price.transport_price') }}'" >Transport Prices</button></li>
+            <li><button onclick="window.location.href='{{ url_for('openlane.openlane_bp_page') }}'" >Openlane</button></li>
+            <li><button onclick="window.location.href='{{ url_for('partslink.partslink_bp_page') }}'" >Partslink</button></li>
+        </ul>
+    </nav>
+</div>
+
+        <!-- Main content (block for Flask pages) -->
+        <main>
+            {% block content %}
+            {% endblock content %}
+        </main>
+
+
+
+</body>
+</html>

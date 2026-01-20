@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    {% if not selected_country %}
+    <div class="container">
+    <p>Please select your country location : </p>
+    <form method="POST">
+        <input type="submit" name="country" value="Germany" class="btn btn-primary">
+        <input type="submit" name="country" value="Portugal" class="btn btn-primary">
+    </form>
+    {% endif %}
+
+
+    {% if selected_country %}
+    <p>Selected: {{ session.country }}</p>
+
+    <div>Brands available: VW, Audi, Skoda.</div>
+    <p class="small_chrs">Excel file must have columns : brand and VIN exactly.</p>
+    <form method="POST" enctype="multipart/form-data">
+    <input type="file" name="file" class="btn btn-primary">
+    <input type="submit" name="action" value="Extract" class="btn btn-primary">
+    </form>
+
+    {% endif %}
+
+    </div>
+{% endblock content %}

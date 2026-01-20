@@ -1,0 +1,11 @@
+Flask==3.0.3
+gunicorn
+playwright==1.48.0
+pandas
+requests==2.32.3
+apscheduler
+openpyxl
+beautifulsoup4
+Flask-SQLAlchemy
+wtforms
+flask_wtf

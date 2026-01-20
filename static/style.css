@@ -1,0 +1,40 @@
+.container_openlane {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    padding: 20px;
+    background-color: #ffffff;
+}
+
+.btn {
+    background-color: #1b263b;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #415a77;
+}
+
+.selector {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #ffffff;
+}
+
+/* -- PARTSLINK --*/
+
+.container>div:nth-child(1) {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.small_chrs {
+    font-size: 10px;
+}
