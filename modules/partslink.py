@@ -4,18 +4,16 @@ import pandas as pd
 from io import BytesIO
 
 def partslink(df,country):
-    audi = 'https://www.partslink24.com/p5/latest/p5.html#%2Fp5vwag~audi_parts~en~'
     vw = 'https://www.partslink24.com/p5/latest/p5.html#%2Fp5vwag~vw_parts~en~'
-    bmw = 'https://www.partslink24.com/p5/latest/p5.html#%2Fp5bmw~bmw_parts~en~'
-    skoda = 'https://www.partslink24.com/p5/latest/p5.html#%2Fp5vwag~skoda_parts~en~'
     vins = df['VIN'].tolist()
     brands = df['brand'].str.lower().tolist()
-    brands_url = {'audi': audi, 'vw': vw, 'bmw': bmw, 'skoda': skoda}
+    brands_url = {'vw': vw}
     print(vins)
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
-        page = browser.new_page()
+        browser = p.chromium.launch(headless=True)
+        context = browser.new_context()
+        page = context.new_page()
         id = "de-800610"
 
         if country == 'Portugal':
@@ -26,81 +24,94 @@ def partslink(df,country):
             password = "AmS2024!"
 
         page.goto("https://www.partslink24.com/")
+        if page.locator("[data-testid='uc-accept-all-button']").count():
+            page.locator("[data-testid='uc-accept-all-button']").click()
+
         page.fill("#login-name", username)
         page.fill("#inputPassword", password)
         page.fill('#login-id', id)
         page.keyboard.press("Enter")
 
-        print('Searching for "Confirm"')
-        try:
-            page.wait_for_selector('#squeezeout-login-btn', timeout=2000)
-            page.click('#squeezeout-login-btn')
-        except TimeoutError:
-            pass
+        time.sleep(3)
+
+        if page.locator("[data-testid='uc-accept-all-button']").count():
+            page.locator("[data-testid='uc-accept-all-button']").click()
+
+        time.sleep(3)
+
+        page.locator("#squeezeout-login-btn").wait_for(timeout=15000)
+        page.locator("#squeezeout-login-btn").click()
+
+        time.sleep(3)
 
         data = []
 
         for vin,brand in zip(vins,brands):
+           if brand in brands_url:
+               print(f'Trying : {vin} | brand : {brand}')
+               if brand.lower() in brands_url:
+                   url = brands_url[brand] + vin
 
-            if brand in brands_url:
-                print(f'Trying : {vin}')
-                if brand.lower() in brands_url:
-                    url = brands_url[brand] + vin
-                time.sleep(1)
+               print(f'Navigating to : {url}')
+               page.goto(url)
+               time.sleep(2)
 
-                page.goto(url)
-                page.wait_for_load_state("networkidle")
-                #vehicle data
-                try:
-                    page.wait_for_selector("[id^='vinfoBasic_c']", timeout=30000)
-                except TimeoutError:
-                    print(f"Skipping {vin} – selector not found")
-                    time.sleep(3)
-                    page.goto('https://www.partslink24.com/partslink24/startup.do')
-                    continue  # go to next VIN
+               #vehicle data
+               try:
+                   page.wait_for_selector("[id^='vinfoBasic_c']", timeout=30000)
+                   print(f'Information Found. Continuing...')
+               except TimeoutError:
+                   print(f"Skipping {vin} – selector not found")
+                   time.sleep(2)
+                   page.goto('https://www.partslink24.com/partslink24/startup.do')
+                   continue  # go to next VIN
 
-                rows = page.locator("[id^='vinfoBasic_c']").all()
-                vehicle = {}
-                for row in rows:
-                    desc = row.locator(".p5_table_cell_comp.p5t14_description").inner_text()
-                    value = row.locator(".p5_table_cell_comp.p5t14_value").inner_text()
-                    vehicle[desc] = value
-                data.append(vehicle)
-                page.locator(".p5_accordion_header").nth(1).click()
-                rows_vd = page.locator("[id^='prNr_c']")
-                count = rows_vd.count()
-                equipment_codes = []
-                equipment_descs = []
-                dont_include = ['without', 'possible', 'on demand']
+               rows = page.locator("[id^='vinfoBasic_c']").all()
+               vehicle = {}
+               for row in rows:
+                   desc = row.locator(".p5_table_cell_comp.p5t14_description").inner_text()
+                   value = row.locator(".p5_table_cell_comp.p5t14_value").inner_text()
+                   vehicle[desc] = value
+               data.append(vehicle)
+               print(f'Opening Equipment Accordion (continuing...)')
+               page.locator(".p5_accordion_header").nth(1).click()
+               rows_vd = page.locator("[id^='prNr_c']")
+               count = rows_vd.count()
+               #equipment_codes = []
+               #equipment_descs = []
+               equipment_full_all = []
+               dont_include = ['without', 'possible', 'on demand']
 
-                for i in range(count):
-                    attr_text = rows_vd.nth(i).locator("div.p5_table_cell_comp.p5t15_col1").inner_text()
-                    code_text = rows_vd.nth(i).locator("div.p5_table_cell_comp.p5t15_col2").inner_text()
-                    desc_text = rows_vd.nth(i).locator("div.p5_table_cell_comp.p5t15_col3").inner_text()
-                    # skip if any forbidden word appears
-                    if any(word in attr_text.lower() for word in dont_include):
-                        continue
-                    if any(word in code_text.lower() for word in dont_include):
-                        continue
-                    if any(word in desc_text.lower() for word in dont_include):
-                        continue
-                    # valid → append values
-                    attribute = attr_text
-                    equipment_code = code_text
-                    equipment_desc = desc_text
+               for i in range(count):
+                   attr_text = rows_vd.nth(i).locator("div.p5_table_cell_comp.p5t15_col1").inner_text()
+                   code_text = rows_vd.nth(i).locator("div.p5_table_cell_comp.p5t15_col2").inner_text()
+                   desc_text = rows_vd.nth(i).locator("div.p5_table_cell_comp.p5t15_col3").inner_text()
+                   # skip if any forbidden word appears
+                   if any(word in attr_text.lower() for word in dont_include):
+                       continue
+                   if any(word in code_text.lower() for word in dont_include):
+                       continue
+                   if any(word in desc_text.lower() for word in dont_include):
+                       continue
+                   # valid → append values
+                   #equipment_code = code_text
+                   #equipment_desc = desc_text
+                   equipment_full = code_text+f'({desc_text})'
 
-                    equipment_codes.append(equipment_code)
-                    equipment_descs.append(equipment_desc)
-                clean_codes = [x.replace("\n", " ").strip() for x in equipment_codes]
-                clean_desc = [x.replace("\n", " ").strip() for x in equipment_descs]
-                vehicle["Equipment Codes"] = "||".join(clean_codes)
-                vehicle["Equipment Descriptions"] = "||".join(clean_desc)
-                page.goto('https://www.partslink24.com/partslink24/startup.do')
-                print(f'Extracted : {vin}')
-                time.sleep(3)
-            else:
-                print(f'Bad brand : {vin}')
-                continue
+                   equipment_full_all.append(equipment_full)
+                   #equipment_codes.append(equipment_code)
+                   #equipment_descs.append(equipment_desc)
+               #clean_codes = [x.replace("\n", " ").strip() for x in equipment_codes]
+               #clean_desc = [x.replace("\n", " ").strip() for x in equipment_descs]
+               clean_all = [x.replace("\n", " ").strip() for x in equipment_full_all]
+               vehicle["Equipments"] = "|".join(clean_all)
+               #vehicle["Equipment Codes"] = "||".join(clean_codes)
+               #vehicle["Equipment Descriptions"] = "||".join(clean_desc)
+               page.goto('https://www.partslink24.com/partslink24/startup.do')
+               print(f'Extracted : {vin}')
+           else:
+               print(f'Bad brand : {vin}')
+               continue
 
         browser.close()
 

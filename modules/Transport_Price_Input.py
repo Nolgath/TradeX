@@ -17,7 +17,7 @@ def transport_price_input(df,user,password):
     password = password
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         page = browser.new_page()
     #Login into the page.
         page.goto("https://ams-de.mega-moves.com/")
