@@ -47,20 +47,18 @@ def transport_price_input(df,user,password):
             if pd.notna(location) and str(location).strip():
                 to_provider = PROVIDER_PAGE+car_id
                 time.sleep(3.5)
-                # page.goto(to_provider)
+                page.goto(to_provider)
                 location_field = page.locator("input[name='Standort']")
-                # location_field.fill(location)
-                # location_field = page.locator("input[name='Standort']")
                 location_field.wait_for(state="visible")
                 location_field.fill(str(location))
                 page.evaluate("submit('/portal/vehicles/pages/vehicle-details-5.php')") #Save Button
-                location_log = 'Location ✓: ' + location
+                location_log = 'Location ✓: ' + str(location)
             else:
                 print(f'No location provided for {vin}')
                 location_log = 'Location ❌'
         #-----------------------------------------------------------------------------------------------------
             #Output Date Input:
-            if pd.notna(output_date) and str(output_date).strip():
+            if pd.notna(output_date) and str(output_date).strip() != "0":
                 to_int_remark = INT_REMARK_PAGE + car_id
                 time.sleep(4)
                 page.goto(to_int_remark, wait_until="domcontentloaded", timeout=10000)
@@ -70,7 +68,7 @@ def transport_price_input(df,user,password):
                 # click submit immediately
                 page.evaluate("submit('/portal/vehicles/pages/vehicle-details-5.php')")  # Save Button
                 print(f"Added output date: {formatted_date} to {vin}")
-                outputdate_log = 'Output Date ✓: ' + output_date
+                outputdate_log = 'Output Date ✓: ' + str(output_date)
             else:
                 print(f"No output date provided for {vin}")
                 outputdate_log = 'Output Date ❌'
