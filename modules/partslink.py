@@ -77,8 +77,6 @@ def partslink(df,country):
                page.locator(".p5_accordion_header").nth(1).click()
                rows_vd = page.locator("[id^='prNr_c']")
                count = rows_vd.count()
-               #equipment_codes = []
-               #equipment_descs = []
                equipment_full_all = []
                dont_include = ['without', 'possible', 'on demand']
 
@@ -94,19 +92,12 @@ def partslink(df,country):
                    if any(word in desc_text.lower() for word in dont_include):
                        continue
                    # valid → append values
-                   #equipment_code = code_text
-                   #equipment_desc = desc_text
                    equipment_full = code_text+f'({desc_text})'
 
                    equipment_full_all.append(equipment_full)
-                   #equipment_codes.append(equipment_code)
-                   #equipment_descs.append(equipment_desc)
-               #clean_codes = [x.replace("\n", " ").strip() for x in equipment_codes]
-               #clean_desc = [x.replace("\n", " ").strip() for x in equipment_descs]
+
                clean_all = [x.replace("\n", " ").strip() for x in equipment_full_all]
                vehicle["Equipments"] = "|".join(clean_all)
-               #vehicle["Equipment Codes"] = "||".join(clean_codes)
-               #vehicle["Equipment Descriptions"] = "||".join(clean_desc)
                page.goto('https://www.partslink24.com/partslink24/startup.do')
                print(f'Extracted : {vin}')
            else:
@@ -116,7 +107,6 @@ def partslink(df,country):
         browser.close()
 
     df_output = pd.DataFrame(data)
-    # df_output.to_excel("partslink_output.xlsx", index=False)
     output = BytesIO()
     df_output.to_excel(output, index=False)
     output.seek(0)
