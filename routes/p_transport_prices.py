@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, send_file, session, send_from_directory
 import os
 from modules.Transport_Price_Input import transport_price_input
+from modules.logs_config import LOGS_FILE
 import pandas as pd
 
 transport_price_bp = Blueprint(
@@ -8,9 +9,6 @@ transport_price_bp = Blueprint(
     __name__,
     template_folder='../templates'
 )
-
-# Define absolute path for logs.txt
-LOGS_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs.txt")
 
 @transport_price_bp.route('/transport_price', methods=['GET', 'POST'])
 def transport_price():

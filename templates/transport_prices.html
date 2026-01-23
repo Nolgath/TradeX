@@ -31,18 +31,31 @@
 
     <script>
         const loading = document.querySelector('.loading');
+        let lastLogContent = '';
 
-        // #need to add if
+        console.log('Log polling started');
+
         const intervalId = setInterval(() => {
           fetch("/logs")
-            .then(r => r.json())
+            .then(r => {
+              if (!r.ok) {
+                throw new Error(`HTTP error! status: ${r.status}`);
+              }
+              return r.json();
+            })
             .then(data => {
+              console.log('Received log data:', data);
 
-              if(!loading.innerHTML.includes(data.logs))
-                loading.innerHTML +=
-                    `
-                      <h3>${data.logs}</h3>
-                    `;
+              // Only update if content has changed
+              if (data.logs && data.logs !== lastLogContent) {
+                lastLogContent = data.logs;
+                loading.innerHTML = `<h3>${data.logs}</h3>`;
+                console.log('Log updated:', data.logs);
+              }
+            })
+            .catch(error => {
+              console.error('Error fetching logs:', error);
+              loading.innerHTML = `<h3 style="color: red;">Error loading logs: ${error.message}</h3>`;
             });
         }, 1500);
 

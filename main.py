@@ -6,20 +6,12 @@ from routes.p_equipment_export import equipment_export_bp
 from routes.p_transport_prices import transport_price_bp
 from routes.p_openlane import openlane_bp
 from routes.p_partslink import partslink_bp
-import os
+from modules.logs_config import LOGS_FILE
 
 
 app = Flask(__name__) #This creates our web app
 
 app.config['SECRET_KEY'] = 'mysecretkey'
-
-# Define absolute path for logs.txt
-LOGS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs.txt")
-
-# Ensure logs.txt exists at startup
-if not os.path.exists(LOGS_FILE):
-    with open(LOGS_FILE, "w", encoding='utf-8') as f:
-        f.write("")
 
 logs_bp = Blueprint("logs", __name__)
 
@@ -30,6 +22,8 @@ def get_logs():
             return {"logs": f.read()}
     except FileNotFoundError:
         return {"logs": ""}
+    except Exception as e:
+        return {"logs": f"Error reading logs: {str(e)}"}
 
 app.register_blueprint(logs_bp)
 app.register_blueprint(main_page_bp)
