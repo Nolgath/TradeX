@@ -12,14 +12,47 @@
     {% endif %}
 
     {% if selected_country %}
-    <p>Selected: {{ session.country }}</p>
+    <h1>Country</h1>
 
-    <div>Only VOLKSWAGEN works. (vw)</div>
-    <p class="small_chrs">Excel file must have columns : brand and VIN exactly.</p>
+    {% if selected_country == "Portugal" %}
+        <img class="flag" id="pt_flag" src="../static/pt_flag.svg">
+    {% else %}
+        <img class="flag" id="de_flag" src="../static/de_flag.svg">
+    {% endif %}
+
+    <h3>Working Brands</h3>
+        <img class="brand_logo" src="../static/vw_logo.svg">
+        <p class="small_chrs">File should contain 2 columns : brand and VIN</p>
+
+
+
     <form method="POST" enctype="multipart/form-data">
-    <input type="file" name="file" class="btn btn-primary">
-    <input type="submit" name="action" value="Extract" class="btn btn-primary">
+    <input  type="file" name="file" class="btn btn-primary">
+    <input id="uploadForm" type="submit" name="action" value="Extract" class="btn btn-primary">
     </form>
+
+    <div class="loading">
+
+    </div>
+
+    <script>
+        const form = document.querySelector('#uploadForm');
+        const loading = document.querySelector('.loading');
+
+        // #need to add if
+        const intervalId = setInterval(() => {
+          fetch("/logs")
+            .then(r => r.json())
+            .then(data => {
+              loading.innerHTML =
+                  `
+                    <h3>${data.logs}</h3>
+                  `;
+            });
+        }, 1500);
+
+    </script>
+
 
     {% endif %}
 

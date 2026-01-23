@@ -4,11 +4,15 @@ import pandas as pd
 from io import BytesIO
 
 def partslink(df,country):
+    open("logs.txt", "w").close()  # clears file
+    with open("logs.txt", "a") as f:
+        f.write("Extraction starting...")
+        f.flush()
+
     vw = 'https://www.partslink24.com/p5/latest/p5.html#%2Fp5vwag~vw_parts~en~'
     vins = df['VIN'].tolist()
     brands = df['brand'].str.lower().tolist()
     brands_url = {'vw': vw}
-    print(vins)
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -51,7 +55,6 @@ def partslink(df,country):
                print(f'Trying : {vin} | brand : {brand}')
                if brand.lower() in brands_url:
                    url = brands_url[brand] + vin
-
                print(f'Navigating to : {url}')
                page.goto(url)
                time.sleep(2)
@@ -59,9 +62,20 @@ def partslink(df,country):
                #vehicle data
                try:
                    page.wait_for_selector("[id^='vinfoBasic_c']", timeout=30000)
-                   print(f'Information Found. Continuing...')
+                   print(f'Working on {brand} | {vin}')
+                   open("logs.txt", "w").close()  # clears file
+                   with open("logs.txt", "a") as f:
+                       f.write(f'Working on : {brand} | {vin}')
+                       f.flush()
+
+
                except TimeoutError:
                    print(f"Skipping {vin} – selector not found")
+                   open("logs.txt", "w").close()  # clears file
+                   with open("logs.txt", "a") as f:
+                       f.write(f'Not found : {brand} | {vin}')
+                       f.flush()
+
                    time.sleep(2)
                    page.goto('https://www.partslink24.com/partslink24/startup.do')
                    continue  # go to next VIN
@@ -103,11 +117,17 @@ def partslink(df,country):
            else:
                print(f'Bad brand : {vin}')
                continue
-
+        time.sleep(5)
+        open("logs.txt", "w").close()  # clears file
+        with open("logs.txt", "a") as f:
+            f.write(f"Complete")
+            f.flush()
         browser.close()
 
     df_output = pd.DataFrame(data)
     output = BytesIO()
     df_output.to_excel(output, index=False)
     output.seek(0)
+    time.sleep(2)
+    open("logs.txt", "w").close()  # clears file
     return output
