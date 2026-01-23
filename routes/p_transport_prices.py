@@ -9,10 +9,13 @@ transport_price_bp = Blueprint(
     template_folder='../templates'
 )
 
+# Define absolute path for logs.txt
+LOGS_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs.txt")
+
 @transport_price_bp.route('/transport_price', methods=['GET', 'POST'])
 def transport_price():
     df = None
-    open("logs.txt", "w", encoding='utf-8').close()
+    open(LOGS_FILE, "w", encoding='utf-8').close()
     logs = []
 
     if request.method == 'POST':
