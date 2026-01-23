@@ -25,16 +25,29 @@
 </form>
 {% endif %}
 
+    <div class="loading">
 
 
-{% if logs %}
-<div class="logs">
-<h2>Logs</h2>
-{% for log in logs %}
-    <p>{{ log }}</p>
-{% endfor %}
-{% endif %}
-</div>
+    </div>
+
+    <script>
+        const loading = document.querySelector('.loading');
+
+        // #need to add if
+        const intervalId = setInterval(() => {
+          fetch("/logs")
+            .then(r => r.json())
+            .then(data => {
+
+              if(!loading.innerHTML.includes(data.logs))
+                loading.innerHTML +=
+                    `
+                      <h3>${data.logs}</h3>
+                    `;
+            });
+        }, 1500);
+
+    </script>
 
 
 {% endblock content %}

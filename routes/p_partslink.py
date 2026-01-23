@@ -22,7 +22,7 @@ def partslink_bp_page():
             return "No file uploaded", 400
 
         df = pd.read_excel(file)
-        output = partslink(df,selected_country)
+        output = partslink(df, selected_country)
 
         return send_file(
             output,
@@ -30,6 +30,7 @@ def partslink_bp_page():
             download_name=f"partslink_result.xlsx",
             mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+
 
     return render_template('partslink.html',
                            selected_country=selected_country)

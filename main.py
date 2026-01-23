@@ -16,7 +16,7 @@ logs_bp = Blueprint("logs", __name__)
 
 @logs_bp.get("/logs")
 def get_logs():
-    with open("logs.txt") as f:
+    with open("logs.txt", encoding='utf-8') as f:
         return {"logs": f.read()}
 
 app.register_blueprint(logs_bp)

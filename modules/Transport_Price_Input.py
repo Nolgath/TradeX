@@ -4,6 +4,10 @@ from modules.transport_data import car_ids
 import pandas as pd
 
 def transport_price_input(df,user,password):
+    open("logs.txt", "w", encoding='utf-8').close()  # clears file
+    with open("logs.txt", "a", encoding='utf-8') as f:
+        f.write("Extraction starting...")
+        f.flush()
     PROVIDER_PAGE = 'https://ams-de.mega-moves.com/portal/vehicles/pages/vehicle-details-4.php?wgID='
     INT_REMARK_PAGE = 'https://ams-de.mega-moves.com/portal/vehicles/pages/vehicle-details-5.php?wgID='
     MAIN_PAGE = 'https://ams-de.mega-moves.com/portal/vehicles/pages/vehicle-details.php?wgID='
@@ -42,6 +46,10 @@ def transport_price_input(df,user,password):
 
             print('#-------------------------NEXT:------------------------')
             print(f'Processing {vin}...')
+            open("logs.txt", "w", encoding='utf-8').close()
+            with open("logs.txt", "a", encoding='utf-8') as f:
+               f.write(f'Processing {vin}...')
+               f.flush()
             print('#------------------------------------------------------')
         #------------------------------------------------------------------------------------------------------
             if pd.notna(location) and str(location).strip():
@@ -52,9 +60,17 @@ def transport_price_input(df,user,password):
                 location_field.wait_for(state="visible")
                 location_field.fill(str(location))
                 page.evaluate("submit('/portal/vehicles/pages/vehicle-details-5.php')") #Save Button
-                location_log = 'Location ✓: ' + str(location)
+                location_log = 'Location: ' + str(location)
+                open("logs.txt", "w", encoding='utf-8').close()
+                with open("logs.txt", "a", encoding='utf-8') as f:
+                    f.write(f'Location added: {str(location)}')
+                    f.flush()
             else:
                 print(f'No location provided for {vin}')
+                open("logs.txt", "w", encoding='utf-8').close()
+                with open("logs.txt", "a", encoding='utf-8') as f:
+                    f.write(f'No location provided for {vin}')
+                    f.flush()
                 location_log = 'Location ❌'
         #-----------------------------------------------------------------------------------------------------
             #Output Date Input:
@@ -69,9 +85,18 @@ def transport_price_input(df,user,password):
                 page.evaluate("submit('/portal/vehicles/pages/vehicle-details-5.php')")  # Save Button
                 print(f"Added output date: {formatted_date} to {vin}")
                 outputdate_log = 'Output Date ✓: ' + str(output_date)
+
+                open("logs.txt", "w", encoding='utf-8').close()
+                with open("logs.txt", "a", encoding='utf-8') as f:
+                    f.write(f"Added output date: {formatted_date} to {vin}")
+                    f.flush()
             else:
                 print(f"No output date provided for {vin}")
                 outputdate_log = 'Output Date ❌'
+                open("logs.txt", "w", encoding='utf-8').close()
+                with open("logs.txt", "a", encoding='utf-8') as f:
+                    f.write(f"No output date provided for {vin}")
+                    f.flush()
 
             #-----------------------------------------------------------------------------------------------------
             if t_type != 0:
@@ -146,6 +171,12 @@ def transport_price_input(df,user,password):
                     print(v_values)
                     if full_transport_label in values_v:
                         print(f'Already Exists {full_transport_label}')
+
+                        open("logs.txt", "w", encoding='utf-8').close()
+                        with open("logs.txt", "a", encoding='utf-8') as f:
+                            f.write(f'Already Exists {full_transport_label}')
+                            f.flush()
+
                         price_input = f'Duplicate Found! Skipped.'
                         continue
                     else:
@@ -158,6 +189,12 @@ def transport_price_input(df,user,password):
                     print(e_values)
                     if full_transport_label in values_v:
                         print(f'Already Exists {full_transport_label}')
+
+                        open("logs.txt", "w", encoding='utf-8').close()
+                        with open("logs.txt", "a", encoding='utf-8') as f:
+                            f.write(f'Already Exists {full_transport_label}')
+                            f.flush()
+
                         price_input = f'Duplicate Found! Skipped.'
                         continue
                     else:
@@ -170,6 +207,12 @@ def transport_price_input(df,user,password):
                     print(it_values)
                     if full_transport_label in values_v:
                         print(f'Already Exists {full_transport_label}')
+
+                        open("logs.txt", "w", encoding='utf-8').close()
+                        with open("logs.txt", "a", encoding='utf-8') as f:
+                            f.write(f'Already Exists {full_transport_label}')
+                            f.flush()
+
                         price_input = f'Duplicate Found! Skipped.'
                         continue
                     else:
@@ -182,6 +225,12 @@ def transport_price_input(df,user,password):
                     print(et_values)
                     if full_transport_label in values_v:
                         print(f'Already Exists {full_transport_label}')
+
+                        open("logs.txt", "w", encoding='utf-8').close()
+                        with open("logs.txt", "a", encoding='utf-8') as f:
+                            f.write(f'Already Exists {full_transport_label}')
+                            f.flush()
+
                         price_input = f'Duplicate Found! Skipped.'
                         continue
                     else:
@@ -193,11 +242,20 @@ def transport_price_input(df,user,password):
             else:
                 print('No transport type selected')
                 print(f'Skipping {vin} pricing inputs.')
+
+                open("logs.txt", "w", encoding='utf-8').close()
+                with open("logs.txt", "a", encoding='utf-8') as f:
+                    f.write(f'Skipping {vin} pricing inputs. : No transport type selected')
+                    f.flush()
+
                 price_input = 'No Price Added ❌'
                 continue
 
-            car_log = f'Car: {vin} | {location_log} | {outputdate_log} | {price_input} | {MAIN_PAGE+car_id} '
-            logs.append(car_log)
+            open("logs.txt", "w", encoding='utf-8').close()
+            with open("logs.txt", "a", encoding='utf-8') as f:
+                f.write(f'Car: {vin} | {location_log} | {outputdate_log} | {price_input} | {MAIN_PAGE+car_id} ')
+                f.flush()
+
         print('Done!')
         browser.close()
     return logs

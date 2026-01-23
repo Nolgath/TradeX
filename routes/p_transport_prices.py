@@ -12,6 +12,7 @@ transport_price_bp = Blueprint(
 @transport_price_bp.route('/transport_price', methods=['GET', 'POST'])
 def transport_price():
     df = None
+    open("logs.txt", "w", encoding='utf-8').close()
     logs = []
 
     if request.method == 'POST':
